@@ -19,7 +19,9 @@ const customParams = {
 
 const createRequest = (input, callback) => {
   // The Validator helps you validate the Chainlink request data
-  const validator = new Validator(callback, input, customParams)
+  const validator = new Validator(input, customParams)
+  if (validator.error) return callback(validator.error.statusCode, validator.error)
+  
   const jobRunID = validator.validated.id
   const endpoint = validator.validated.data.endpoint || 'price'
   const url = `https://min-api.cryptocompare.com/data/${endpoint}`
