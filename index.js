@@ -41,7 +41,7 @@ const createRequest = (input, callback) => {
     endpoint = `stats?account=${value}`
   }
   
-  const url = `http://165.232.180.65/api/submit/${endpoint}`
+  const url = ` http://18.191.166.107/api/submit/${endpoint}`
   console.log(url)
 
 
