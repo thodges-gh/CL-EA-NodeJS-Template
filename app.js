@@ -6,7 +6,13 @@ const app = express()
 const port = process.env.EA_PORT || 8080
 
 app.use(bodyParser.json())
-
+/*app.GET('/', (req, res) => {
+  console.log('GET Data: ', req.body)
+  createRequest(req.body, (status, result) => {
+    console.log('Result: ', result)
+    res.status(status).json(result)
+  })
+})*/
 app.post('/', (req, res) => {
   console.log('POST Data: ', req.body)
   createRequest(req.body, (status, result) => {
