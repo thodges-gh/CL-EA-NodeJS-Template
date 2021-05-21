@@ -72,4 +72,10 @@ yarn start
 ```bash
 curl -X POST -H "content-type:application/json" "http://18.191.166.107/api/submit/" --data '{"addresses": ["0x71B274ddd46a15f5324a4B3F40543af3869DE8B0","0x97b90FBc8904F861F76CB06BFa0A465b72C5E662","0xB5600a26257786A173852c176cb8e286B637af80","0x6801b5ae5781c93Be0F7d223DB72B4E6e56c8Bf6"],"job_type": "calculate"}'
 ```
+## Output
+{"message":"job_created","job_id":"48b5c100-5e59-40e0-87cc-315b775f9bee"}
 
+## Call the external adapter for fetching score using GET 
+```bash
+curl -X GET "http://18.191.166.107/api/resolve/<job_id>/"
+```
