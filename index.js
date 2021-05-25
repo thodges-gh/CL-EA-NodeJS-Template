@@ -42,7 +42,8 @@ const createRequest = (input, callback) => {
   }
   
   const url = ` http://18.191.166.107/api/submit/${endpoint}`
-  console.log(url)
+  console.log(url.score)
+
 
 
 
@@ -56,7 +57,7 @@ const createRequest = (input, callback) => {
 
   const config = {
     url,
-    params,
+    customParams,
     headers: headerObj
   }
 
@@ -71,7 +72,7 @@ const createRequest = (input, callback) => {
       if (action=='account') {
         response.data.result = Requester.validateResultNumber(response.data, ['address array','job_type'])
       }
-
+      const tick = parseInt(response.data.score/100) - 2
       callback(response.status, Requester.success(jobRunID, response))
     })
     .catch(error => {
