@@ -21,6 +21,7 @@ const customParams = {
   action: ['action'],
   value: ['value'],
   endpoint: false
+  
 }
 
 
@@ -35,15 +36,13 @@ const createRequest = (input, callback) => {
   console.log(action);
   console.log(value);
 
-  if (action=='username') {
-    endpoint = `lookup?username=${value}`
-  } else if (action=='account') {
-    endpoint = `stats?account=${value}`
+  if (action=='submit') {
+    endpoint = `api/submit=${value}`
+  } else if (action == 'resolve') {
+    endpoint = `api/resolve=${value}`
   }
   
-  const url = ` http://18.191.166.107/api/submit/${endpoint}`
-  console.log(url.score)
-
+  const url = ` http://18.191.166.107/${endpoint}`
 
 
 
@@ -69,10 +68,11 @@ const createRequest = (input, callback) => {
       // result key. This allows different adapters to be compatible with
       // one another.
       //process response
-      if (action=='account') {
-        response.data.result = Requester.validateResultNumber(response.data, ['address array','job_type'])
+      if (action=='submit') {
+        response.data.result = Requester.validateResultNumber(response.data, ['message','job_id'])
+      } else if (action == 'resolve') {
+        response.data.result = Requester.validateResultNumber(response.data, ['result'])
       }
-      const tick = parseInt(response.data.score/100) - 2
       callback(response.status, Requester.success(jobRunID, response))
     })
     .catch(error => {
