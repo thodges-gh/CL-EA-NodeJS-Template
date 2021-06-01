@@ -1,11 +1,4 @@
-const { Requester, Validator } = require('@chainlink/external-adapter')
-//it public so there is no api 
-//require('dotenv').config()
-//var apiKey = process.env.API_KEY
-
-
-
-
+const { Requester, Validator } = require('@chainlink/external-adapter');
 // Define custom error scenarios for the API.
 // Return true for the adapter to retry.
 const customError = (data) => {
@@ -13,15 +6,17 @@ const customError = (data) => {
   return false
 }
 
+
+
 // Define custom parameters to be used by the adapter.
 // Extra parameters can be stated in the extra object,
 // with a Boolean value indicating whether or not they
 // should be required.
 const customParams = {
-  action: ['action'],
-  value: ['value'],
+  action: ['addresses', 'job_type'],
+  value: ['job_id','bucket'],
   endpoint: false
-  
+
 }
 
 
@@ -30,26 +25,19 @@ const createRequest = (input, callback) => {
   const validator = new Validator(callback, input, customParams)
   const jobRunID = validator.validated.id
   const action = validator.validated.data.action;
-  const value = validator.validated.data.value;
+  const value= validator.validated.data.value;
+  
   var endpoint;
   
-  console.log(action);
-  console.log(value);
-
-  if (action=='submit') {
-    endpoint = `api/submit=${value}`
-  } else if (action == 'resolve') {
-    endpoint = `api/resolve=${value}`
-  }
-  
-  const url = ` http://18.191.166.107/${endpoint}`
-
-
-
+  if(action == 'addresses'&& action =='jon_type'){
+    endpoint = `submit=${value}`
+  } else
+    endpoint = `resolve/jobid=${value}`
+  const url = ` http://18.191.166.107/api/${endpoint}`
 //add header
   const headerObj = {
     'Content-Type': 'application/json'
-    //public api so no need Authorization
+    //public api so no need Aut                                                                                                                                                                                                                                                                                                                                                                                                                                                               horization
     //"Authorization": apiKey 
 
   };
@@ -63,21 +51,25 @@ const createRequest = (input, callback) => {
   // The Requester allows API calls be retry in case of timeout
   // or connection failure
   Requester.request(config, customError)
-    .then(response => {
-      // It's common practice to store the desired value at the top-level
-      // result key. This allows different adapters to be compatible with
-      // one another.
-      //process response
-      if (action=='submit') {
-        response.data.result = Requester.validateResultNumber(response.data, ['message','job_id'])
-      } else if (action == 'resolve') {
-        response.data.result = Requester.validateResultNumber(response.data, ['result'])
-      }
-      callback(response.status, Requester.success(jobRunID, response))
-    })
-    .catch(error => {
-      callback(500, Requester.errored(jobRunID, error))
-    })
+  .then(response => {
+    // first time posts to address-db, returns addresses
+    // need to add error checks for address-db failed call and submit failed call
+      post("http://18.191.166.107/api/submit/",addresses,job_type).then(response =>{
+        get("http://18.191.166.107/api/resolve/",job_id).then(response =>{
+          let jobState = response.end
+          while(response.end == false) {
+            jobState = get("http://18.191.166.107/api/resolve/",job_id).then(response => {
+              return response.end
+            })
+          }
+        }) 
+        response.data.result = Requester.validateResultNumber(response.data, ['score','bucket'])       
+      })
+    callback(response.status, Requester.success(jobRunID, response))    
+  })
+  .catch(error => {
+    callback(500, Requester.errored(jobRunID, error))
+  })
 }
 
 // This is a wrapper to allow the function to work with
