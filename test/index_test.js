@@ -12,12 +12,13 @@ describe('createRequest', () => {
     requests.forEach(req => {
       it(`${req.name}`, (done) => {
         createRequest(req.testData, (statusCode, data) => {
+          console.log("printout", data)
           assert.equal(statusCode, 200)
           assert.equal(data.jobRunID, jobID)
           assert.isNotEmpty(data.data)
           done()
         })
-      }).timeout(30000)
+      })
     })
   })
 

@@ -41,27 +41,16 @@ const createRequest = (input, callback) => {
   
   Requester.request(config, customError)
     .then(response => {
-      callback(response.status, Requester.success(jobRunID, response))
+      //manage ticksets here
+      callback(response.status,  callback(response.status, (jobRunID, {
+        jobRunID: input.id,
+        data: { result: response.data},
+        statusCode: 200
+        })) )
     })
     .catch(error => {
       callback(500, Requester.errored(jobRunID, error))
     })
-}
-
-// This is a wrapper to allow the function to work with
-// GCP Functions
-exports.gcpservice = (req, res) => {
-  createRequest(req.body, (statusCode, data) => {
-    res.status(statusCode).send(data)
-  })
-}
-
-// This is a wrapper to allow the function to work with
-// AWS Lambda
-exports.handler = (event, context, callback) => {
-  createRequest(event, (statusCode, data) => {
-    callback(null, data)
-  })
 }
 
 // This is a wrapper to allow the function to work with
