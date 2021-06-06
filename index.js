@@ -14,50 +14,33 @@ const customError = (data) => {
 // with a Boolean value indicating whether or not they
 // should be required.
 const customParams = {
-  addresses: ['addresses'],
-  job_type: ['job_type'],
-  endpoint: false
+  tokenIdInt: ['tokenIdInt'],
+  tickSet: ['tickSet']
 }
-
 
 const createRequest = (input, callback) => {
   // The Validator helps you validate the Chainlink request data
   const validator = new Validator(callback, input, customParams)
+  console.log(validator.validated.data)
   const jobRunID = validator.validated.id
-  const addresses = validator.validated.data.addresses;
-  const job_type= validator.validated.data.job_type;
-  const endpoint1 = validator.validated.data.endpoint || 'submit';
-  const endpoint2 = validator.validated.data.endpoint || 'resolve';
-  const id = fetch (`http://18.191.166.107/api/${endpoint1}`,{
-    method: 'POST',
-    body: json.stringify(customParams),
-  })
-    .then(response => response.json)
-    .then(job_id => console.log(job_id))
-  const data = fetch('GET',`http://18.191.166.107/api/${endpoint2}/${id}`)
-    .then(response => response.json)
-    .then(bucket => console.log(bucket))
-//add header
-  const headerObj = {
-    'Content-Type': 'application/json'
-    //public api so no need Aut                                                                                                                                                                                                                                                                                                                                                                                                                                                               horization
-    //"Authorization": apiKey 
-
-  };
+  const tokenIdInt = validator.validated.data.tokenIdInt;
+  const tickSet= validator.validated.data.tickSet;
+  const url = `https://xzff24vr3m.execute-api.us-east-2.amazonaws.com/default/spectral-proxy/`
 
   const config = {
     url,
-    customParams,
-    headers: headerObj
+    headers: {
+      'Content-Type': 'application/json',                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+      'x-api-key': 'XYpX4gaNaCafgAzdBpQyaLrF34N0Qp71N6qOwvSh' 
+    },
+    data: `{\"tokenInt\":\"${tokenIdInt}\"}`,
+    method: "POST"
   }
 
-
+  console.log(config)
+  
   Requester.request(config, customError)
     .then(response => {
-      // It's common practice to store the desired value at the top-level
-      // result key. This allows different adapters to be compatible with
-      // one another.
-      response.data.result = Requester.validateResultNumber(response.data, bucket)
       callback(response.status, Requester.success(jobRunID, response))
     })
     .catch(error => {

@@ -6,10 +6,7 @@ describe('createRequest', () => {
 
   context('successful calls', () => {
     const requests = [
-      { name: 'id not supplied', testData: { data: { base: 'ETH', quote: 'USD' } } },
-      { name: 'base/quote', testData: { id: jobID, data: { base: 'ETH', quote: 'USD' } } },
-      { name: 'from/to', testData: { id: jobID, data: { from: 'ETH', to: 'USD' } } },
-      { name: 'coin/market', testData: { id: jobID, data: { coin: 'ETH', market: 'USD' } } }
+      { name: 'token test', testData: { id: jobID, data: {tokenIdInt: '42747786677057537933777365201756780713494970703527385451017290874280990481333', tickSet: '1' } } }
     ]
 
     requests.forEach(req => {
@@ -18,34 +15,32 @@ describe('createRequest', () => {
           assert.equal(statusCode, 200)
           assert.equal(data.jobRunID, jobID)
           assert.isNotEmpty(data.data)
-          assert.isAbove(Number(data.result), 0)
-          assert.isAbove(Number(data.data.result), 0)
           done()
         })
-      })
+      }).timeout(30000)
     })
   })
 
-  context('error calls', () => {
-    const requests = [
-      { name: 'empty body', testData: {} },
-      { name: 'empty data', testData: { data: {} } },
-      { name: 'base not supplied', testData: { id: jobID, data: { quote: 'USD' } } },
-      { name: 'quote not supplied', testData: { id: jobID, data: { base: 'ETH' } } },
-      { name: 'unknown base', testData: { id: jobID, data: { base: 'not_real', quote: 'USD' } } },
-      { name: 'unknown quote', testData: { id: jobID, data: { base: 'ETH', quote: 'not_real' } } }
-    ]
+  // context('error calls', () => {
+  //   const requests = [
+  //     { name: 'empty body', testData: {} },
+  //     { name: 'empty data', testData: { data: {} } },
+  //     { name: 'base not supplied', testData: { id: jobID, data: { quote: 'USD' } } },
+  //     { name: 'quote not supplied', testData: { id: jobID, data: { base: 'ETH' } } },
+  //     { name: 'unknown base', testData: { id: jobID, data: { base: 'not_real', quote: 'USD' } } },
+  //     { name: 'unknown quote', testData: { id: jobID, data: { base: 'ETH', quote: 'not_real' } } }
+  //   ]
 
-    requests.forEach(req => {
-      it(`${req.name}`, (done) => {
-        createRequest(req.testData, (statusCode, data) => {
-          assert.equal(statusCode, 500)
-          assert.equal(data.jobRunID, jobID)
-          assert.equal(data.status, 'errored')
-          assert.isNotEmpty(data.error)
-          done()
-        })
-      })
-    })
-  })
+  //   requests.forEach(req => {
+  //     it(`${req.name}`, (done) => {
+  //       createRequest(req.testData, (statusCode, data) => {
+  //         assert.equal(statusCode, 500)
+  //         assert.equal(data.jobRunID, jobID)
+  //         assert.equal(data.status, 'errored')
+  //         assert.isNotEmpty(data.error)
+  //         done()
+  //       })
+  //     })
+  //   })
+  // })
 })
