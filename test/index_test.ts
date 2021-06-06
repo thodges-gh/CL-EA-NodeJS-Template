@@ -1,26 +1,35 @@
-const assert = require('chai').assert
-const createRequest = require('../index.js').createRequest
+import { assert } from 'chai';
+import { createRequest } from '../index';
 
 describe('createRequest', () => {
-  const jobID = '1'
+  const jobID = '1';
 
   context('successful calls', () => {
     const requests = [
-      { name: 'token test', testData: { id: jobID, data: {tokenIdInt: '42747786677057537933777365201756780713494970703527385451017290874280990481333', tickSet: '1' } } }
-    ]
+      {
+        name: 'token test',
+        testData: {
+          id: jobID,
+          data: {
+            tokenIdInt: '42747786677057537933777365201756780713494970703527385451017290874280990481333',
+            tickSet: '1',
+          },
+        },
+      },
+    ];
 
-    requests.forEach(req => {
+    requests.forEach((req) => {
       it(`${req.name}`, (done) => {
-        createRequest(req.testData, (statusCode, data) => {
-          console.log("printout", data)
-          assert.equal(statusCode, 200)
-          assert.equal(data.jobRunID, jobID)
-          assert.isNotEmpty(data.data)
-          done()
-        })
-      })
-    })
-  })
+        createRequest(req.testData, (statusCode: number, data: {jobRunID: string, data: any}) => {
+          console.log('printout', data);
+          assert.equal(statusCode, 200);
+          assert.equal(data.jobRunID, jobID);
+          assert.isNotEmpty(data.data);
+          done();
+        });
+      });
+    });
+  });
 
   // context('error calls', () => {
   //   const requests = [
@@ -44,4 +53,4 @@ describe('createRequest', () => {
   //     })
   //   })
   // })
-})
+});
