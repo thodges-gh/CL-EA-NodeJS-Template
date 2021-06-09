@@ -1,4 +1,5 @@
-const createRequest = require('./index').createRequest
+import { Request, Response } from 'express'
+import { createRequest } from './index'
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -13,9 +14,9 @@ app.use(bodyParser.json())
     res.status(status).json(result)
   })
 })*/
-app.post('/', (req, res) => {
+app.post('/', (req: Request, res: Response) => {
   console.log('POST Data: ', req.body)
-  createRequest(req.body, (status, result) => {
+  createRequest(req.body, (status: any, result: any) => {
     console.log('Result: ', result)
     res.status(status).json(result)
   })
