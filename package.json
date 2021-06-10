@@ -12,7 +12,8 @@
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
   "dependencies": {
-    "@chainlink/external-adapter": "^0.2.6"
+    "@chainlink/external-adapter": "^0.2.6",
+    "dotenv": "^10.0.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.77",

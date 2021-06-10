@@ -1,9 +1,15 @@
 const { Requester, Validator } = require('@chainlink/external-adapter') // no @types packages for this?
 import { Callback, Context } from 'aws-lambda'
+// import dotenv from 'dotenv'
+// dotenv.config()
+
+interface iCustomError {
+  Response: string
+}
 
 // Define custom error scenarios for the API.
 // Return true for the adapter to retry.
-const customError = (data: any) => {
+const customError = (data: iCustomError) => {
   if (data.Response === 'Error') return true
   return false
 }
@@ -13,15 +19,17 @@ const customError = (data: any) => {
 // with a Boolean value indicating whether or not they
 // should be required.
 const customParams = {
-  tokenIdInt: ['tokenIdInt'],
-  tickSet: ['tickSet'],
+  tokenIdInt: 'tokenIdInt',
+  tickSet: 'tickSet'
 }
 
 // TODO: add types
 export const createRequest = (input: any, callback: any) => {
   // The Validator helps you validate the Chainlink request data
-  const validator = new Validator(callback, input, customParams)
-  console.log(validator.validated.data)
+  console.log("inputs: ", input)
+  const validator = new Validator(input, customParams)
+  console.log("validator: ", validator.validated)
+  console.log("inputed data: ", validator.validated.data)
   const jobRunID = validator.validated.id
   const tokenIdInt = validator.validated.data.tokenIdInt
   const tickSet = validator.validated.data.tickSet
@@ -35,9 +43,10 @@ export const createRequest = (input: any, callback: any) => {
     },
     data: `{\"tokenInt\":\"${tokenIdInt}\"}`,
     method: 'POST',
+    timeout: 30000
   }
 
-  console.log(config)
+  console.log("config for post: ", config)
 
   Requester.request(config, customError)
     .then((response: any) => {

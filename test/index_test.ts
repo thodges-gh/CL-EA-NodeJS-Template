@@ -12,7 +12,7 @@ describe('createRequest', () => {
           id: jobID,
           data: {
             tokenIdInt: '42747786677057537933777365201756780713494970703527385451017290874280990481333',
-            tickSet: '1',
+            tickSet: '1'
           },
         },
       },
@@ -21,7 +21,7 @@ describe('createRequest', () => {
     requests.forEach((req) => {
       it(`${req.name}`, (done) => {
         createRequest(req.testData, (statusCode: number, data: {jobRunID: string, data: any}) => {
-          console.log('printout', data);
+          console.log('printout', data.data);
           assert.equal(statusCode, 200);
           assert.equal(data.jobRunID, jobID);
           assert.isNotEmpty(data.data);
